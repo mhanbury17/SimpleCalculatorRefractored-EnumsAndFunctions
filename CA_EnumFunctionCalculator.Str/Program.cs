@@ -17,7 +17,6 @@ namespace CA_EnumCalculator
         // declare global variables
         //
         static double operand, answer;
-        //yjdtfhgjh
 
         static string userResponse;
         static string operationAsString;
