@@ -3,28 +3,25 @@
 namespace CA_EnumCalculator
 {
     public enum Operation
-        {
-            ADD,
-            SUBTRACT,
-            DIVIDE,
-            MULTIPLY,
-            POWER,
-            PERCENT
-        }
+    {
+        NONE,
+        ADD,
+        SUBTRACT,
+        DIVIDE,
+        MULTIPLY,
+        POWER,
+        PERCENT
+    }
+
     class Program
     {
-        //
-        // declare global variables
-        //
-        static double operand, answer;
-
-        static string userResponse;
-        static string operationAsString;
-        static Operation operation;
-        static string operationSymbol;
-
-        static bool quitting = false;
-        static bool validResponse;
+        //*****************************************
+        // Title: A Simple Calculator Refactored
+        // Application Type: Console
+        // Authors: Miles Hanbury, Lauren Lampe
+        // Date Created: 03-18-2019
+        // Last Modified: 03-20-2019
+        //*****************************************
 
         /// <summary>
         /// application flow and loop
@@ -32,6 +29,12 @@ namespace CA_EnumCalculator
         /// <param name="args"></param>
         static void Main(string[] args)
         {
+            double operandX = 0, num1=0, num2;
+            string userResponse = "";
+            int operandCount=1;
+            Operation operation = Operation.NONE;
+            bool quitting = false, validResponse = true;
+
             DisplayOpeningScreen();
 
             //
@@ -39,21 +42,91 @@ namespace CA_EnumCalculator
             //
             while (!quitting)
             {
-                DisplayGetFirstNumber();
+                for (int i = 0; i < operandCount; i++)
+                {
+                    num2 = DisplayGetOperandX(operandX, userResponse, operandCount);
+                    if (operandCount>1)
+                    {
+                        do
+                        {
+                            validResponse = true;
+                            Console.Clear();
+                            Console.WriteLine();
+                            Console.WriteLine("Calculating:");
+                            DisplayAnswer(operation, num1, num2);
+                            num1 = PerformOperation(num1, num2, operation);
+                            Console.WriteLine(num1);
+                            DisplayContinuePrompt();
+                            Console.WriteLine();
+                            Console.WriteLine("Would you like to make a new calculation with this answer?");
+                            Console.WriteLine("[YES/NO]");
+                            userResponse = Console.ReadLine();
+                            userResponse = userResponse.ToUpper();
+                            if (userResponse=="YES")
+                            {
+                                operation = DisplayGetOperation(userResponse, validResponse, operation);
+                                operandCount = operandCount + 1;
+                                DisplayContinuePrompt();
+                            }
+                            else if (userResponse=="NO")
+                            {
+                                operandCount = 0;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Please enter a valid response.");
+                                validResponse = false;
+                            }
+                        } while (!validResponse);
 
-                DisplayGetSecondNumber();
-
-                DisplayGetOperation();
-
-                PerformOperation();
-
-                DisplayAnswer();
-
-                DisplayGetQuitResponse();
+                    }
+                    else
+                    {
+                        num1 = num2;
+                        operation = DisplayGetOperation(userResponse , validResponse, operation);
+                        operandCount = operandCount + 1;
+                    }
+                }
+                
+                quitting = DisplayGetQuitResponse(userResponse,validResponse, quitting);
             }
 
             DisplayClosingScreen();
         }
+
+        private static double DisplayGetOperandX(double operandX, string userResponse, int operandCount)
+        {
+            bool validOperand = true;
+            do
+            {
+                validOperand = true;
+                Console.Clear();
+                //
+                // ask user for operand
+                //
+                Console.WriteLine();
+                Console.WriteLine($"\t\tOperand {operandCount}");
+                Console.WriteLine();
+                Console.Write($"Enter Operand {operandCount}: ");
+                userResponse = Console.ReadLine();
+
+                //
+                // test for valid
+                //
+                if (double.TryParse(userResponse, out operandX))
+                {
+                    DisplayContinuePrompt();
+                }
+                else
+                {
+                    Console.WriteLine("Please enter a number.");
+                    validOperand = false;
+                    DisplayContinuePrompt();
+                }
+            } while (!validOperand);
+            return operandX;
+        }
+
 
         /// <summary>
         /// display the opening screen
@@ -76,117 +149,13 @@ namespace CA_EnumCalculator
             Console.ReadKey();
         }
 
-        private static void GetOperandX()
-        {
-            //
-            // reset bool to use for validation
-            //
-            validResponse = false;
-
-            while (!validResponse)
-            {
-                ResetConsoleScreen();
-                int operandCount = 0;
-                operandCount = operandCount + 1;
-
-                Console.Write($"\tEnter Operand {operandCount}:");
-                userResponse = Console.ReadLine();
-
-                if (!double.TryParse(userResponse, out operand))
-                {
-                    Console.WriteLine("\tYou must enter a number. (2.4, 9, etc.)");
-                    
-                    //
-                    // pause for user
-                    //
-                    Console.WriteLine("\t\tPress any key to continue.");
-                    Console.ReadKey();
-                }
-                else
-                {
-                    validResponse = true;
-                }
-            }
-            /* 
-             * 
-             * My email is hanbur3@mail.nmc.edu if have any questions
-             * 
-             * 
-             * 
-        /// <summary>
-        /// get the first number and validate the user's response
-        /// </summary>
-        private static void DisplayGetFirstNumber()
-        {
-            //
-            // reset bool to use for validation
-            //
-            validResponse = false;
-
-            while (!validResponse)
-            {
-                ResetConsoleScreen();
-
-                Console.Write("\tEnter the first number:");
-                userResponse = Console.ReadLine();
-
-                if (!double.TryParse(userResponse, out number1))
-                {
-                    Console.WriteLine("\tYou must enter a number. (2.4, 9, etc.)");
-
-                    //
-                    // pause for user
-                    //
-                    Console.WriteLine("\t\tPress any key to continue.");
-                    Console.ReadKey();
-                }
-                else
-                {
-                    validResponse = true;
-                }
-            }
-        }
-
-        /// <summary>
-        /// get the second number and validate the user's response
-        /// </summary>
-        private static void DisplayGetSecondNumber()
-        {
-            //
-            // reset bool to use for validation
-            //
-            validResponse = false;
-
-            while (!validResponse)
-            {
-                ResetConsoleScreen();
-
-                Console.Write("\tEnter the second number:");
-                userResponse = Console.ReadLine();
-
-                if (!double.TryParse(userResponse, out number2))
-                {
-                    Console.WriteLine("\tYou must enter a number. (2.4, 9, etc.)");
-
-                    //
-                    // pause for user
-                    //
-                    Console.WriteLine("\t\tPress any key to continue.");
-                    Console.ReadKey();
-                }
-                else
-                {
-                    validResponse = true;
-                }
-            }
-        }
-        */
-
         /// <summary>
         /// get the operation and validate the user's response
         /// </summary>
-        private static void DisplayGetOperation()
+        private static Operation DisplayGetOperation(string userResponse, bool validResponse, Operation operation)
         {
+            string operationAsString;
+
             //
             // reset bool to use for validation
             //
@@ -199,7 +168,7 @@ namespace CA_EnumCalculator
                 Console.Write("\tEnter the operation ( ADD SUBTRACT MULTIPLY DIVIDE POWER PERCENT):");
                 operationAsString = Console.ReadLine().ToUpper();
 
-                if (!Enum.TryParse(userResponse, out operation))
+                if (!Enum.TryParse(operationAsString, out operation))
                 {
                     Console.WriteLine("Operation invalid. Please enter a new operation.");
                     validResponse = false;
@@ -211,35 +180,34 @@ namespace CA_EnumCalculator
                 switch (operationAsString)
                 {
                     case "ADD":
-                        operationSymbol = "+";
+                        operation = Operation.ADD;
                         validResponse = true;
                         break;
 
                     case "SUBTRACT":
-                        operationSymbol = "-";
+                        operation = Operation.SUBTRACT;
                         validResponse = true;
                         break;
 
                     case "MULTIPLY":
-                        operationSymbol = "*";
+                        operation = Operation.MULTIPLY;
                         validResponse = true;
                         break;
 
                     case "DIVIDE":
-                        operationSymbol = "/";
+                        operation = Operation.DIVIDE;
                         validResponse = true;
                         break;
                     case "POWER":
-                        operationSymbol = "^";
+                        operation = Operation.POWER;
                         validResponse = true;
                         break;
                     case "PERCENT":
-                        operationSymbol = "/";
+                        operation = Operation.PERCENT;
                         validResponse = true;
                         break;
                     default:
                         Console.WriteLine("\tYou must enter a valid operation.");
-
                         //
                         // pause for user
                         //
@@ -248,37 +216,79 @@ namespace CA_EnumCalculator
                         break;
                 }
             }
+
+            return operation;
         }
 
         /// <summary>
         /// perform the calculation
         /// </summary>
-        private static void PerformOperation()
+        private static double PerformOperation(double num1, double num2, Operation operation)
         {
-            switch (operationAsString)
+            switch (operation)
             {
-                case "ADD":
-                    answer = number1 + number2;
+                case Operation.ADD:
+                    num1 = num1 + num2;
                     break;
 
-                case "SUBTRACT":
-                    answer = number1 - number2;
+                case Operation.SUBTRACT:
+                    num1 = num1 - num2;
                     break;
 
-                case "MULTIPLY":
-                    answer = number1 * number2;
+                case Operation.MULTIPLY:
+                    num1 = num1 * num2;
                     break;
 
-                case "DIVIDE":
-                    answer = number1 / number2;
+                case Operation.DIVIDE:
+                    num1 = num1 / num2;
                     break;
-                case "POWER":
-                    answer = Math.Pow(number1, number2);
+                case Operation.POWER:
+                    num1 = Math.Pow(num1, num2);
                     break;
-                case "PERCENT":
-                    answer = (number1 * 100) / number2;
+                case Operation.PERCENT:
+                    num1 = (num1 * 100) / num2;
                     break;
 
+                default:
+                    //
+                    // note: the operation was already validated, but we do need
+                    //       to ensure that the operation names match or our 
+                    //       answer value will always equal 0
+                    //
+                    break;
+            }
+            return num1;
+        }
+
+        /// <summary>
+        /// display the answer
+        /// </summary>
+        private static void DisplayAnswer(Operation operation, double num1, double num2)
+        {
+            Console.WriteLine();
+            switch (operation)
+            {
+                case Operation.ADD:
+                    Console.Write($"{num1}+{num2}=");
+                    break;
+
+                case Operation.SUBTRACT:
+                    Console.Write($"{num1}-{num2}=");
+                    break;
+
+                case Operation.MULTIPLY:
+                    Console.Write($"{num1}*{num2}=");
+                    break;
+
+                case Operation.DIVIDE:
+                    Console.Write($"{num1}/{num2}=");
+                    break;
+                case Operation.POWER:
+                    Console.Write($"{num1}^{num2}=");
+                    break;
+                case Operation.PERCENT:
+                    Console.Write($"{num1}/{num2}=");
+                    break;
                 default:
                     //
                     // note: the operation was already validated, but we do need
@@ -290,44 +300,9 @@ namespace CA_EnumCalculator
         }
 
         /// <summary>
-        /// display the answer
-        /// </summary>
-        private static void DisplayAnswer()
-        {
-            string answerString = "";
-
-            ResetConsoleScreen();
-
-            if (operationAsString == "DIVIDE" && number2 == 0)
-            {
-                Console.WriteLine("\tDividing by zero is not allowed.");
-            }
-            else
-            {
-                if (operationAsString == "DIVIDE")
-                {
-                    answerString = answer.ToString("N2");
-                }
-                else
-                {
-                    answerString = answer.ToString("N");
-                }
-
-                Console.WriteLine($"\tAnswer: {number1} {operationSymbol} {number2} = {answerString}");
-            }
-            
-            //
-            // pause for user
-            //
-            Console.WriteLine();
-            Console.WriteLine("\t\tPress any key to continue.");
-            Console.ReadKey();
-        }
-
-        /// <summary>
         /// ask the user to continue and validate the user's response
         /// </summary>
-        private static void DisplayGetQuitResponse()
+        private static bool DisplayGetQuitResponse(string userResponse, bool validResponse, bool quitting)
         {
             //
             // reset bool to use for validation
@@ -364,6 +339,7 @@ namespace CA_EnumCalculator
                     validResponse = true;
                 }
             }
+            return quitting;
         }
 
         /// <summary>
@@ -400,6 +376,13 @@ namespace CA_EnumCalculator
             Console.WriteLine("\t\tThe Simple Calculator");
             Console.WriteLine();
             Console.WriteLine();
+        }
+
+        private static void DisplayContinuePrompt()
+        {
+            Console.WriteLine();
+            Console.WriteLine("Press any key to continue.");
+            Console.ReadKey();
         }
     }
 }
