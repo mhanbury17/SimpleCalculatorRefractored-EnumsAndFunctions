@@ -29,7 +29,7 @@ namespace CA_EnumCalculator
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            double operandX = 0, num1=0, num2;
+            double operandX = 0, num1, num2;
             string userResponse = "";
             int operandCount=1;
             Operation operation = Operation.NONE;
@@ -42,6 +42,8 @@ namespace CA_EnumCalculator
             //
             while (!quitting)
             {
+                num1 = 0;
+                operandCount = 1;
                 for (int i = 0; i < operandCount; i++)
                 {
                     num2 = DisplayGetOperandX(operandX, userResponse, operandCount);
