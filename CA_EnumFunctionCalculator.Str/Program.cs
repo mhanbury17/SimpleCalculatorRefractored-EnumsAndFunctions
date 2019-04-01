@@ -18,7 +18,7 @@ namespace CA_EnumCalculator
         //*****************************************
         // Title: A Simple Calculator Refactored
         // Application Type: Console
-        // Authors: Miles Hanbury, Lauren Lampe
+        // Authors: Miles Hanbury, Lauren Lempe
         // Date Created: 03-18-2019
         // Last Modified: 03-20-2019
         //*****************************************
@@ -52,13 +52,22 @@ namespace CA_EnumCalculator
                         do
                         {
                             validResponse = true;
+
                             Console.Clear();
                             Console.WriteLine();
                             Console.WriteLine("Calculating:");
+                            
+                            //
+                            // Displays answer and replaces num1 with the answer
+                            //
                             DisplayAnswer(operation, num1, num2);
                             num1 = PerformOperation(num1, num2, operation);
                             Console.WriteLine(num1);
                             DisplayContinuePrompt();
+
+                            //
+                            // asks user if they want to calculate another solution with the answer from the previous solution
+                            //
                             Console.WriteLine();
                             Console.WriteLine("Would you like to make a new calculation with this answer?");
                             Console.WriteLine("[YES/NO]");
@@ -77,6 +86,7 @@ namespace CA_EnumCalculator
                             else
                             {
                                 Console.WriteLine("Please enter a valid response.");
+                                DisplayContinuePrompt();
                                 validResponse = false;
                             }
                         } while (!validResponse);
@@ -96,6 +106,9 @@ namespace CA_EnumCalculator
             DisplayClosingScreen();
         }
 
+        /// <summary>
+        /// Gets the operands for the calculation
+        /// </summary>
         private static double DisplayGetOperandX(double operandX, string userResponse, int operandCount)
         {
             bool validOperand = true;
@@ -380,6 +393,9 @@ namespace CA_EnumCalculator
             Console.WriteLine();
         }
 
+        /// <summary>
+        /// Prompts user to press any key to continue
+        /// </summary>
         private static void DisplayContinuePrompt()
         {
             Console.WriteLine();
